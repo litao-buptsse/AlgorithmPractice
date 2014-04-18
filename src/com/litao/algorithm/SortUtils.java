@@ -104,6 +104,59 @@ public class SortUtils {
 		}
 	}
 
+	public static <T> void quickSort(T[] array) {
+		quickSort(array, null);
+	}
+
+	public static <T> void quickSort(T[] array, Comparator<T> comparator) {
+		if (array == null) {
+			return;
+		}
+
+		Comparator c;
+		if (comparator == null) {
+			c = InternalComparator.INSTANCE;
+		} else {
+			c = comparator;
+		}
+
+		quickSort(array, 0, array.length - 1, c);
+	}
+
+	private static <T> void quickSort(T[] array, int left, int right, Comparator<T> comparator) {
+		if (left < right) {
+			int pivot = partitions(array, left, right, comparator);
+			quickSort(array, left, pivot - 1, comparator);
+			quickSort(array, pivot + 1, right, comparator);
+		}
+	}
+
+	private static <T> int partitions(T[] array, int left, int right, Comparator<T> comparator) {
+		int i = left;
+		int j = right;
+		T tmp = array[i];
+
+		while (i < j) {
+			while (i < j && comparator.compare(array[j], tmp) >= 0) {
+				j--;
+			}
+			if (i < j) {
+				array[i] = array[j];
+				i++;
+			}
+			while (i < j && comparator.compare(array[i], tmp) < 0) {
+				i++;
+			}
+			if (i < j) {
+				array[j] = array[i];
+				j--;
+			}
+		}
+		array[i] = tmp;
+
+		return i;
+	}
+
 	static class User implements Comparable<User> {
 		private int age;
 
@@ -138,7 +191,8 @@ public class SortUtils {
 		User[] users = {new User(4), new User(1), new User(5), new User(3), new User(2)};
 		// Arrays.sort(users);
 		// SortUtils.bubbleSort(users);
-		SortUtils.mergeSort(users);
+		// SortUtils.mergeSort(users);
+		SortUtils.quickSort(users);
 		for (User user : users) {
 			System.out.println(user);
 		}
